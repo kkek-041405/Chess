@@ -1,5 +1,6 @@
 package com.kkek.chess
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,11 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.res.painterResource
 
 
 val data  = mutableListOf<String>();
 val lightcolor = Color.White
 val darkcolor = Color.Black
+val chess = Chess()
+
+private val img = mapOf<Peice,Int>(Peice.Rook to R.drawable.king_w,Peice.NONE to R.drawable.king_w)
 @Composable
 fun Board(){
     Column(
@@ -38,17 +43,11 @@ fun Board(){
                 .wrapContentWidth(align = Alignment.Start)
                 .fillMaxWidth()
         ){
-            Box {
-                Text(text = " ")
-            }
-            for (i in 1..8){
-               Text(text = ""+i, modifier = Modifier.weight(1f).wrapContentWidth(Alignment.CenterHorizontally))
-            }
+
         }
         for (i in 1..8){
 
             Row {
-                Box(Modifier.wrapContentHeight(Alignment.CenterVertically)){ Text(text = ""+i)}
                 for (j in 1..8){
                     val bg =  if ((i+j) % 2 == 0) lightcolor else darkcolor
                     Box(
@@ -58,6 +57,8 @@ fun Board(){
                             .background(bg)
                     ){
                         Text(text = ""+i+j)
+                        val x:Int = img.get(chess.pos.get(""+i+j))!!
+                        Image(painter = painterResource(id = x), contentDescription = "")
                     };
                 }
             }
