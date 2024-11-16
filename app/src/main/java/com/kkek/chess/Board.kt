@@ -18,13 +18,13 @@ val darkcolor = Color.Black
 val chess = Chess()
 
 private val img = mapOf(
-    Peice.King to R.drawable.king_w,
-    Peice.Queen to R.drawable.queen_w,
-    Peice.Rook to R.drawable.rook_w,
-    Peice.Bishop to R.drawable.bishop_w,
-    Peice.Knight to R.drawable.knight_w,
-    Peice.Pawn to R.drawable.pawn_w,
-    Peice.NONE to R.drawable.none
+    Piece.PieceType.KING to R.drawable.king_w,
+    Piece.PieceType.QUEEN to R.drawable.queen_w,
+    Piece.PieceType.ROOK to R.drawable.rook_w,
+    Piece.PieceType.BISHOP to R.drawable.bishop_w,
+    Piece.PieceType.KNIGHT to R.drawable.knight_w,
+    Piece.PieceType.PAWN to R.drawable.pawn_w,
+    Piece.PieceType.NONE to R.drawable.ic_launcher_background
 )
 
 /**
@@ -53,7 +53,7 @@ fun Board() {
                     Text(text = "$row$col")
                     val piece = chess.pos["$row$col"]
                     piece?.let {
-                        val imageRes = img[it] ?: R.drawable.none
+                        val imageRes = img[it.type] ?: R.drawable.ic_launcher_background
                         Image(painter = painterResource(id = imageRes), contentDescription = "")
                     }
                 }

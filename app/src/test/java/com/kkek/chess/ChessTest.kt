@@ -16,10 +16,10 @@ class ChessTest {
     @Test
     fun testInitialSetup() {
         val expectedInitialSetup = mapOf(
-            "11" to Peice.Rook,
-            "81" to Peice.Rook,
-            "88" to Peice.Rook,
-            "18" to Peice.Rook
+            "11" to Piece.Rook,
+            "81" to Piece.Rook,
+            "88" to Piece.Rook,
+            "18" to Piece.Rook
         )
         for ((position, piece) in expectedInitialSetup) {
             assertEquals(piece, chess.pos[position])
@@ -30,10 +30,10 @@ class ChessTest {
     fun testReset() {
         chess.reset()
         val expectedResetSetup = mapOf(
-            "11" to Peice.Rook,
-            "81" to Peice.Rook,
-            "88" to Peice.Rook,
-            "18" to Peice.Rook
+            "11" to Piece.Rook,
+            "81" to Piece.Rook,
+            "88" to Piece.Rook,
+            "18" to Piece.Rook
         )
         for ((position, piece) in expectedResetSetup) {
             assertEquals(piece, chess.pos[position])
