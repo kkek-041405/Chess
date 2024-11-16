@@ -60,8 +60,13 @@ import com.google.firebase.analytics.analytics
 import com.google.firebase.auth.auth
 import com.google.firebase.database.database
 
+/**
+ * MainActivity is the entry point of the application.
+ * It initializes Firebase, sets up the UI, and handles lifecycle events.
+ */
 class MainActivity : ComponentActivity() {
     private lateinit var firebaseAnalytics: FirebaseAnalytics
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         firebaseAnalytics = Firebase.analytics
@@ -85,81 +90,19 @@ class MainActivity : ComponentActivity() {
         Firebase.database.getReference(Firebase.auth.currentUser!!.uid).setValue("online")
         super.onRestart()
     }
+
     override fun onPause() {
         Firebase.database.getReference(Firebase.auth.currentUser!!.uid).setValue("offline")
         super.onPause()
     }
+
     override fun onStart() {
         Firebase.database.getReference(Firebase.auth.currentUser!!.uid).setValue("online")
         super.onStart()
     }
+
     override fun onDestroy() {
         Firebase.database.getReference(Firebase.auth.currentUser!!.uid).setValue("offline")
         super.onDestroy()
     }
 }
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-//@Composable
-//fun Online(
-//    game: GameViewModel = viewModel()
-//) {
-//    val gameUiState by game.uiState.collectAsState()
-//    Scaffold(
-//        Modifier.fillMaxSize()
-//    ) {
-//        Column(
-//            Modifier.fillMaxSize(),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
-//        ) {
-//            var inputCode by remember { mutableStateOf("") }
-//            Text(text = gameUiState.currentPlayer.toString())
-//            Text(text = gameUiState.ConnectionCode.toString())
-//            IconButton(onClick = {
-//            game.updateBoard() }) {
-//                Icons.Default.Refresh
-//            }
-//            Row(
-//                horizontalArrangement = Arrangement.Center,
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Button(onClick = { game.invitePlayer("B") }
-//                ) {
-//                    Text(text = "White")
-//                }
-//                Button(onClick = { game.invitePlayer("W") }
-//                ) {
-//                    Text(text = "Black")
-//                }
-//            }
-//            TextField(value = inputCode, onValueChange = { inputCode = it })
-//            Button(onClick = { game.acceptInvite(inputCode) }) {
-//                Text(text = "Accept")
-//            }
-//            ChessBoard()
-//
-//        }
-////        if (gameUiState.ConnectionCode != null && !gameUiState.isConnected){
-////            BasicAlertDialog(onDismissRequest = { game.cancelConnection() }) {
-////                    Surface(
-////                        shape = MaterialTheme.shapes.large,
-////                        modifier = Modifier
-////                            .fillMaxWidth()
-////                            .padding(16.dp)
-////                            .aspectRatio(5f)
-////                    ) {
-////                        Column(
-////                            horizontalAlignment = Alignment.CenterHorizontally,
-////                            verticalArrangement = Arrangement.Center
-////                        ) {
-////                            Text(text = "${gameUiState.ConnectionCode}")
-////                        }
-////                    }
-////            }
-////        }
-//    }
-//}
-//
-//

@@ -22,6 +22,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlin.random.Random
 
+/**
+ * ViewModel class for managing the game state and logic.
+ */
 class GameViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -79,12 +82,10 @@ class GameViewModel: ViewModel() {
         }
 
         override fun onCancelled(error: DatabaseError) {
-
-
+            // Log the error
+            Log.e("Firebase", "Database error: ${error.message}")
         }
     }
-
-
 
     init {
         for (i in 0..7) {
@@ -109,6 +110,14 @@ class GameViewModel: ViewModel() {
         board[7][4].piece = mutableStateOf(Piece(PieceType.KING, PieceColor.WHITE))
     }
 
+    /**
+     * Checks if a move is valid for a given piece.
+     * @param start The starting square.
+     * @param end The ending square.
+     * @param currentPlayer The current player.
+     * @param pieceType The type of the piece (default is the type of the piece on the starting square).
+     * @return True if the move is valid, false otherwise.
+     */
     fun isValidMove(start: Square, end: Square, currentPlayer: PieceColor, pieceType: PieceType = start.piece.value.type): Boolean {
         if (start.piece.value.type == PieceType.None || start.piece.value.color != currentPlayer) return false // No piece or not your turn
 
@@ -224,6 +233,13 @@ class GameViewModel: ViewModel() {
         }
         return false
     }
+
+    /**
+     * Moves a piece from the start square to the end square.
+     * @param start The starting square.
+     * @param end The ending square.
+     * @return True if the move was successful, false otherwise.
+     */
     fun movePiece(start: Square, end: Square): Boolean {
         print( "Moving piece from ${start.row},${start.col} to ${end.row},${end.col}")
         print( "Current player: $currentPlayer")
@@ -259,28 +275,54 @@ class GameViewModel: ViewModel() {
             // Handle invalid moves
         }
     }
+
+    /**
+     * Updates the board state in the database.
+     */
     private fun updateBoardInDB(){
         database.getReference("Match").child(_uiState.value.ConnectionCode.toString()).child("board").setValue(exportGame())
         database.getReference("Match").child(_uiState.value.ConnectionCode.toString()).child("currentPlayer").setValue(currentPlayer)
     }
 
+    /**
+     * Updates the board state from the database.
+     */
     fun updateBoard() {
         database.getReference("Match").child(_uiState.value.ConnectionCode.toString()).get().addOnSuccessListener {
             importGame(it.child("board").value.toString())
             currentPlayer = PieceColor.valueOf(it.child("currentPlayer").value.toString())
         }
     }
+
+    /**
+     * Updates the last move in the database.
+     * @param start The starting square.
+     * @param end The ending square.
+     */
     private fun updateMoveInDB(start: Square, end: Square) {
         updateBoardInDB()
         database.getReference("Match").child(_uiState.value.ConnectionCode.toString()).child("lastMove").setValue("${start.row},${start.col},${end.row},${end.col}")
     }
+
+    /**
+     * Updates the promotion in the database.
+     * @param promoteTO The piece type to promote to.
+     */
     private fun updatePromotionInDB(promoteTO: PieceType) {
         updateBoardInDB()
         database.getReference("Match").child(_uiState.value.ConnectionCode.toString()).child("promote").setValue(promoteTO.toString())
     }
 
+    /**
+     * Updates the promotion locally.
+     * @param promoteTO The piece type to promote to.
+     */
     private fun updatePromotion(promoteTO: PieceType) { promote(promoteTO) }
 
+    /**
+     * Updates the move locally.
+     * @param indexs The list of indices representing the move.
+     */
     private fun updateMove(indexs: List<String>) {
         print("updateMove $indexs")
         if (indexs.size != 4) return
@@ -288,6 +330,13 @@ class GameViewModel: ViewModel() {
         movePiece(board[indexs[0].toInt()][indexs[1].toInt()],board[indexs[2].toInt()][indexs[3].toInt()])
     }
 
+    /**
+     * Checks if a move would put the current player's king in check.
+     * @param start The starting square.
+     * @param end The ending square.
+     * @param currentPlayer The current player.
+     * @return True if the move is valid, false otherwise.
+     */
     fun isCheckAfterMove(start: Square, end: Square, currentPlayer: PieceColor): Boolean {
         if (!isValidMove(start,end,currentPlayer)) return false
         val originalEndPiece = end.piece.value
@@ -307,7 +356,11 @@ class GameViewModel: ViewModel() {
         return isMoveValid
     }
 
-    // ... These functions require more complex logic and are left as placeholders for now.
+    /**
+     * Checks if the current player's king is in check.
+     * @param player The current player.
+     * @return True if the king is in check, false otherwise.
+     */
     fun isCheck(player: PieceColor): Boolean {
         val kingSquare = findKingSquare(player)
 
@@ -324,6 +377,11 @@ class GameViewModel: ViewModel() {
         return false
     }
 
+    /**
+     * Checks if the current player is in checkmate.
+     * @param player The current player.
+     * @return True if the player is in checkmate, false otherwise.
+     */
     fun isCheckmate(player: PieceColor): Boolean {
         if (!isCheck(player)) return false // Not in check, so not checkmate
 
@@ -359,6 +417,11 @@ class GameViewModel: ViewModel() {
         return true // No valid moves to get out of check
     }
 
+    /**
+     * Checks if the current player is in stalemate.
+     * @param player The current player.
+     * @return True if the player is in stalemate, false otherwise.
+     */
     fun isStalemate(player: PieceColor): Boolean {
         if (isCheck(player)) return false // In check, so not stalemate
 
@@ -380,7 +443,11 @@ class GameViewModel: ViewModel() {
         return true // No valid moves found
     }
 
-    // Helper function to find the king's square
+    /**
+     * Helper function to find the king's square.
+     * @param player The current player.
+     * @return The square where the king is located.
+     */
     private fun findKingSquare(player: PieceColor): Square {
         for (row in 0..7) {
             for (col in 0..7) {
@@ -393,6 +460,10 @@ class GameViewModel: ViewModel() {
         throw IllegalStateException("King not found on the board!") // This should ideally never happen
     }
 
+    /**
+     * Checks if a pawn can be promoted.
+     * @return True if a pawn can be promoted, false otherwise.
+     */
     fun canPromote(): Boolean {
         for (row in intArrayOf(0,7)){
             for (col in 0..7){
@@ -405,6 +476,10 @@ class GameViewModel: ViewModel() {
         return false
     }
 
+    /**
+     * Promotes a pawn to the specified piece type.
+     * @param promoteTO The piece type to promote to.
+     */
     fun promote(promoteTO: PieceType) {
         if (uiState.value.isConnected) updatePromotionInDB(promoteTO)
         print("${promoteTO}")
@@ -419,10 +494,12 @@ class GameViewModel: ViewModel() {
                 print("${square.piece.value.type}")
             }
         }
-
-
     }
 
+    /**
+     * Invites a player to join the game.
+     * @param player The player to invite (default is "W").
+     */
     fun invitePlayer(player: String = "W") {
         if(!_uiState.value.isLoggedIn) loginAnonymously()
         if (!uiState.value.isConnected){
@@ -442,10 +519,11 @@ class GameViewModel: ViewModel() {
                 )
             }
         }
-
-
     }
 
+    /**
+     * Logs in the user anonymously.
+     */
     private fun loginAnonymously() {
         if(auth.signInAnonymously().isSuccessful) {
             //update login Status as true
@@ -457,6 +535,9 @@ class GameViewModel: ViewModel() {
         }
     }
 
+    /**
+     * Cancels the current connection.
+     */
     fun cancelConnection() {
         database.getReference("Match").child(uiState.value.ConnectionCode.toString()).removeEventListener(childEventListener)
         _uiState.update {
@@ -467,6 +548,10 @@ class GameViewModel: ViewModel() {
         }
     }
 
+    /**
+     * Accepts an invitation to join a game.
+     * @param connectionCode The connection code for the game.
+     */
     fun acceptInvite(connectionCode:String) {
         if (auth.currentUser == null) loginAnonymously()
         database.getReference("Match").child(connectionCode).get().addOnSuccessListener {
@@ -503,6 +588,10 @@ class GameViewModel: ViewModel() {
         }
     }
 
+    /**
+     * Exports the current game state to a string.
+     * @return The game state as a string.
+     */
     fun exportGame(): String {
         var gameCode: String = ""
         for (row in board){
@@ -526,6 +615,10 @@ class GameViewModel: ViewModel() {
         return gameCode
     }
 
+    /**
+     * Imports a game state from a string.
+     * @param gameCode The game state as a string.
+     */
     fun importGame(gameCode: String){
         var row = 0
         var col = 0
@@ -553,6 +646,9 @@ class GameViewModel: ViewModel() {
         }
     }
 
+    /**
+     * Resets the game state to the initial state.
+     */
     fun reset() {
         for (i in 0..7) {
             board[1][i].piece = mutableStateOf(Piece(PieceType.PAWN, PieceColor.BLACK))
@@ -596,6 +692,4 @@ class GameViewModel: ViewModel() {
         isInvalidConnectionCode.value = false
         currentPlayer = PieceColor.WHITE
     }
-
-
 }

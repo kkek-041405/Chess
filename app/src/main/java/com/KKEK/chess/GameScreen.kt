@@ -60,7 +60,10 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.KKEK.chess.ui.GameViewModel
 
-
+/**
+ * Composable function to display the game screen.
+ * @param game The GameViewModel instance.
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -230,6 +233,10 @@ fun GameScreen(
     }
 
 }
+
+/**
+ * Composable function to display the app bar.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar() {
@@ -259,6 +266,11 @@ fun AppBar() {
     )
 }
 
+/**
+ * Composable function to display the chessboard.
+ * @param modifier Modifier for the chessboard.
+ * @param game The GameViewModel instance.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChessBoard(modifier: Modifier = Modifier,game: GameViewModel = viewModel()) {
@@ -502,6 +514,11 @@ fun ChessBoard(modifier: Modifier = Modifier,game: GameViewModel = viewModel()) 
 
 }
 
+/**
+ * Composable function to display the game over message.
+ * @param onDismissRequest Callback when the dialog is dismissed.
+ * @param message The game over message.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameOverMessage(onDismissRequest:()->Unit,message: String) {
@@ -525,6 +542,13 @@ fun GameOverMessage(onDismissRequest:()->Unit,message: String) {
     }
 }
 
+/**
+ * Composable function to display a chessboard square.
+ * @param modifier Modifier for the square.
+ * @param square The Square instance.
+ * @param onSquareClick Callback when the square is clicked.
+ * @param borderColor The border color of the square.
+ */
 @Composable
 fun ChessboardSquare(
     modifier: Modifier = Modifier,
@@ -548,6 +572,11 @@ fun ChessboardSquare(
     }
 }
 
+/**
+ * Function to get the image resource for a given piece type.
+ * @param piece The PieceType instance.
+ * @return The image resource ID.
+ */
 fun imageRes(piece: PieceType): Int {
     return  when(piece) {
         PieceType.PAWN -> R.drawable.pawn_b
@@ -560,6 +589,10 @@ fun imageRes(piece: PieceType): Int {
     }
 }
 
+/**
+ * Composable function to display a chess piece.
+ * @param piece The Piece instance.
+ */
 @Composable
 fun PieceView(piece: Piece) {
     val imageResource = when (piece.type) {
@@ -574,7 +607,12 @@ fun PieceView(piece: Piece) {
     Image(painterResource(imageResource), contentDescription = null)
 }
 
-
+/**
+ * Composable function to display player information.
+ * @param Player The PieceColor instance representing the player.
+ * @param knockedpieces List of knocked out pieces.
+ * @param invitePlayer Callback to invite a player.
+ */
 @Composable
 fun PlayerInfo( Player: PieceColor, knockedpieces: List<Piece>,invitePlayer: (String) -> Unit) {
     var modifier = Modifier
@@ -618,6 +656,14 @@ fun PlayerInfo( Player: PieceColor, knockedpieces: List<Piece>,invitePlayer: (St
 
 }
 
+/**
+ * Composable function to display knocked out pieces.
+ * @param color The PieceColor instance representing the player.
+ * @param knockedpieces List of knocked out pieces.
+ * @param modifier Modifier for the pieces.
+ * @param startIndex The starting index of the pieces.
+ * @param maxPiece The maximum number of pieces to display.
+ */
 @Composable
 fun KnockedOutPieces(color: PieceColor,knockedpieces: List<Piece>,modifier: Modifier,startIndex:Int,maxPiece: Int) {
     for (i in startIndex..maxPiece){
@@ -635,6 +681,10 @@ fun KnockedOutPieces(color: PieceColor,knockedpieces: List<Piece>,modifier: Modi
     }
 }
 
+/**
+ * Composable function to display the player's display picture.
+ * @param currentPlayer The PieceColor instance representing the current player.
+ */
 @Composable
 fun DisplayPicture(currentPlayer: PieceColor = PieceColor.WHITE,) {
     Surface(
@@ -652,4 +702,3 @@ fun DisplayPicture(currentPlayer: PieceColor = PieceColor.WHITE,) {
         )
     }
 }
-
