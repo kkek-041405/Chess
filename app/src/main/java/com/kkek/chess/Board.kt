@@ -2,14 +2,7 @@ package com.kkek.chess
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Text
@@ -24,7 +17,15 @@ val lightcolor = Color.White
 val darkcolor = Color.Black
 val chess = Chess()
 
-private val img = mapOf<Peice, Int>(Peice.Rook to R.drawable.king_w, Peice.NONE to R.drawable.king_w)
+private val img = mapOf(
+    Peice.King to R.drawable.king_w,
+    Peice.Queen to R.drawable.queen_w,
+    Peice.Rook to R.drawable.rook_w,
+    Peice.Bishop to R.drawable.bishop_w,
+    Peice.Knight to R.drawable.knight_w,
+    Peice.Pawn to R.drawable.pawn_w,
+    Peice.NONE to R.drawable.none
+)
 
 /**
  * Composable function to display the chessboard.
@@ -36,26 +37,24 @@ fun Board() {
             Alignment.Center
         )
     ) {
-        Row(
-            Modifier
-                .wrapContentSize(align = Alignment.Start)
-                .fillMaxWidth()
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(8),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // Empty row for spacing
-        }
-        for (i in 1..8) {
-            Row {
-                for (j in 1..8) {
-                    val bg = if ((i + j) % 2 == 0) lightcolor else darkcolor
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .aspectRatio(1f)
-                            .background(bg)
-                    ) {
-                        Text(text = "$i$j")
-                        val x: Int = img[chess.pos["$i$j"]]!!
-                        Image(painter = painterResource(id = x), contentDescription = "")
+            items(64) { index ->
+                val row = index / 8 + 1
+                val col = index % 8 + 1
+                val bg = if ((row + col) % 2 == 0) lightcolor else darkcolor
+                Box(
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .background(bg)
+                ) {
+                    Text(text = "$row$col")
+                    val piece = chess.pos["$row$col"]
+                    piece?.let {
+                        val imageRes = img[it] ?: R.drawable.none
+                        Image(painter = painterResource(id = imageRes), contentDescription = "")
                     }
                 }
             }

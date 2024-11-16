@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Chess {
-    Map<String, Peice> pos = new HashMap<String, Peice>();
+    Map<String, Piece> pos = new HashMap<String, Piece>();
 
     /**
      * Constructor for the Chess class.
@@ -13,7 +13,7 @@ public class Chess {
     public Chess() {
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
-                pos.put("" + i + j, Peice.NONE);
+                pos.put("" + i + j, new Piece(Piece.PieceType.NONE, "" + i + j));
             }
         }
         reset();
@@ -24,10 +24,10 @@ public class Chess {
      * Places the rooks in their starting positions.
      */
     public void reset() {
-        pos.put("11", Peice.Rook);
-        pos.put("81", Peice.Rook);
-        pos.put("88", Peice.Rook);
-        pos.put("18", Peice.Rook);
+        pos.put("11", new Piece(Piece.PieceType.ROOK, "11"));
+        pos.put("81", new Piece(Piece.PieceType.ROOK, "81"));
+        pos.put("88", new Piece(Piece.PieceType.ROOK, "88"));
+        pos.put("18", new Piece(Piece.PieceType.ROOK, "18"));
         System.out.println(pos);
     }
 
@@ -55,20 +55,10 @@ public class Chess {
      * @param piece    The piece to place.
      * @throws IllegalArgumentException if the position is invalid.
      */
-    public void placePiece(String position, Peice piece) {
+    public void placePiece(String position, Piece piece) {
         if (!isValidPosition(position)) {
             throw new IllegalArgumentException("Invalid position: " + position);
         }
         pos.put(position, piece);
     }
-}
-
-enum Peice {
-    King,
-    Queen,
-    Rook,
-    Bishop,
-    Knight,
-    Pawn,
-    NONE
 }
