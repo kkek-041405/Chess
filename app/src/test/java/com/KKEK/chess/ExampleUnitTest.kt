@@ -165,4 +165,19 @@ class ExampleUnitTest {
         val endSquare = gameViewModel.board[1][3]
         assertFalse(gameViewModel.movePiece(startSquare, endSquare))
     }
+
+    @Test
+    fun testMakeComputerMove() {
+        val gameViewModel = GameViewModel()
+        gameViewModel.isComputerOpponent = true
+        gameViewModel.makeComputerMove()
+        assertEquals(PieceColor.WHITE, gameViewModel.currentPlayer)
+    }
+
+    @Test
+    fun testStartGameAgainstComputer() {
+        val gameViewModel = GameViewModel()
+        gameViewModel.isComputerOpponent = true
+        assertTrue(gameViewModel.isComputerOpponent)
+    }
 }

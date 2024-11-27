@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlin.random.Random
+import com.KKEK.chess.ComputerPlayer
 
 /**
  * ViewModel class for managing the game state and logic.
@@ -40,6 +41,8 @@ class GameViewModel: ViewModel() {
     var currentPlayer: PieceColor = PieceColor.WHITE
     var openinvitePlayerDialog = mutableStateOf(false)
     var isInvalidConnectionCode = mutableStateOf(false)
+    var isComputerOpponent: Boolean = false
+    private val computerPlayer = ComputerPlayer()
     val childEventListener = object : ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
             if (snapshot.key.toString() in listOf("W","B") && snapshot.value.toString() != auth.currentUser?.uid){
@@ -268,6 +271,9 @@ class GameViewModel: ViewModel() {
             currentPlayer = if (currentPlayer == PieceColor.WHITE) PieceColor.BLACK else PieceColor.WHITE
             if (uiState.value.isConnected) updateMoveInDB(start,end)
             print( "Piece moved from ${start.row},${start.col} to ${end.row},${end.col}")
+            if (isComputerOpponent && currentPlayer == PieceColor.BLACK) {
+                makeComputerMove()
+            }
             return true
             // ... (you may need additional logic here for special moves like pawn promotion)
         } else {
@@ -690,6 +696,14 @@ class GameViewModel: ViewModel() {
         knockedPieces_W.value = mutableListOf()
         openinvitePlayerDialog.value = false
         isInvalidConnectionCode.value = false
+        currentPlayer = PieceColor.WHITE
+    }
+
+    /**
+     * Makes a move for the computer player.
+     */
+    fun makeComputerMove() {
+        computerPlayer.makeMove(this)
         currentPlayer = PieceColor.WHITE
     }
 }
