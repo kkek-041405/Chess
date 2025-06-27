@@ -18,7 +18,7 @@ This is a chess game application built using Jetpack Compose and Firebase. The p
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/chess-game.git
+   git clone https://github.com/KKEK-041405/Chess.git
    cd chess-game
    ```
 
